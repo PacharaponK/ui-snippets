@@ -1,6 +1,10 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "vite",
+  "proxy": {
+    "entrypoint": "server/libraryProxy.js",
+    "matcher": ["/api/session", "/member-assets/:path*"]
+  },
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
   ]

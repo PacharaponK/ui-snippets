@@ -1,6 +1,8 @@
 <script setup>
 import { computed } from 'vue'
 import { categories, componentRegistry, frameworks } from '../../data/componentRegistry'
+import { customizeCategoryId } from '../../data/libraryAccess'
+import { signedIn } from '../../data/librarySession'
 import { galleryLocation } from '../../router/galleryLocation'
 
 const props = defineProps({
@@ -13,13 +15,13 @@ const props = defineProps({
 
 defineEmits(['navigate', 'close'])
 
-const customizeCategory = categories.find(item => item.id === 'customize')
+const customizeCategory = categories.find(item => item.id === customizeCategoryId)
 const standardCategories = categories.filter(item => item !== customizeCategory)
 
 const categoryCounts = computed(() => {
   const available = props.framework === 'all'
-    ? componentRegistry
-    : componentRegistry.filter(entry => entry.framework === props.framework)
+    ? componentRegistry.value
+    : componentRegistry.value.filter(entry => entry.framework === props.framework)
 
   return Object.fromEntries(
     standardCategories.map(({ id }) => [id, available.filter(entry => entry.category === id).length]),
@@ -42,6 +44,7 @@ const categoryCounts = computed(() => {
     <nav class="sidebar-section" aria-label="Library">
       <p class="sidebar-label">Library</p>
       <RouterLink
+        v-if="signedIn"
         class="sidebar-link"
         :class="{ 'is-active': galleryActive && framework === 'all' && !category }"
         :aria-current-value="galleryActive && framework === 'all' && !category ? 'page' : 'false'"
@@ -65,6 +68,7 @@ const categoryCounts = computed(() => {
         <span>{{ item.name }}</span>
       </RouterLink>
       <RouterLink
+        v-if="signedIn"
         class="sidebar-link"
         :class="{ 'is-active': galleryActive && category === customizeCategory.id }"
         :aria-current-value="galleryActive && category === customizeCategory.id ? 'true' : 'false'"

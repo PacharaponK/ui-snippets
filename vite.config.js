@@ -1,6 +1,68 @@
-import { defineConfig } from 'vite'
+import { Readable } from 'node:stream'
+import { defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import { authorizeMemberAsset, handleSession, memberAssetsPath, privateHeaders, sessionPath } from './server/libraryAccess.js'
 
-export default defineConfig({
-  plugins: [vue()],
+function localLibraryAccess(key) {
+  function configure(server) {
+    server.middlewares.use(async (incoming, outgoing, next) => {
+      const url = new URL(incoming.url, `http://${incoming.headers.host}`)
+      const path = url.pathname
+      const isSession = path === sessionPath
+      const isMemberAsset = path.startsWith(memberAssetsPath)
+        || path === '/src/data/customizeRegistry.js'
+        || path.startsWith('/src/examples/customize/')
+      if (!isSession && !isMemberAsset) return next()
+
+      try {
+        const request = new Request(url, {
+          method: incoming.method,
+          headers: incoming.headers,
+          ...(incoming.method === 'POST' && { body: Readable.toWeb(incoming), duplex: 'half' }),
+        })
+        const response = isSession
+          ? await handleSession(request, key)
+          : authorizeMemberAsset(request, key)
+        if (!response) {
+          for (const [name, value] of Object.entries(privateHeaders)) outgoing.setHeader(name, value)
+          return next()
+        }
+
+        outgoing.statusCode = response.status
+        for (const [name, value] of response.headers) outgoing.setHeader(name, value)
+        outgoing.end(Buffer.from(await response.arrayBuffer()))
+      } catch (error) {
+        next(error)
+      }
+    })
+  }
+
+  return {
+    name: 'local-library-access',
+    configureServer: configure,
+    configurePreviewServer: configure,
+  }
+}
+
+const privateDirectory = memberAssetsPath.slice(1)
+const customizeRegistry = '/src/data/customizeRegistry.js'
+
+export default defineConfig(({ mode }) => {
+  const { UI_SNIPPETS_ACCESS_KEY: key } = loadEnv(mode, process.cwd(), 'UI_SNIPPETS_')
+
+  return {
+    plugins: [vue(), localLibraryAccess(key)],
+    build: {
+      rollupOptions: {
+        output: {
+          chunkFileNames: chunk => chunk.facadeModuleId?.endsWith(customizeRegistry)
+            ? `${privateDirectory}[name]-[hash].js`
+            : 'assets/[name]-[hash].js',
+          assetFileNames: asset => asset.names.includes('customizeRegistry.css')
+            ? `${privateDirectory}[name]-[hash][extname]`
+            : 'assets/[name]-[hash][extname]',
+        },
+      },
+    },
+  }
 })

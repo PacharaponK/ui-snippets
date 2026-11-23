@@ -246,6 +246,52 @@
   color: var(--accent-strong);
 }
 
+.session-actions {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.session-button {
+  min-height: 2.45rem;
+  padding-inline: 0.7rem;
+  border-color: var(--line);
+  color: var(--accent-strong);
+}
+
+.session-error {
+  position: absolute;
+  z-index: 3;
+  top: calc(100% + 0.35rem);
+  right: 0;
+  width: 10rem;
+  padding: 0.5rem;
+  border: 1px solid var(--line);
+  border-radius: 0.45rem;
+  background: var(--white);
+  color: #9b2828;
+}
+
+.sign-in-panel {
+  width: min(100%, 26rem);
+  margin: clamp(1rem, 8vh, 5rem) auto;
+  padding: clamp(1.15rem, 4vw, 1.75rem);
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+  background: var(--white);
+}
+
+.sign-in-panel h1 {
+  margin: 0 0 0.45rem;
+  font-size: 1.75rem;
+  font-weight: 750;
+  letter-spacing: -0.035em;
+}
+
+.sign-in-panel > p {
+  margin-bottom: 1.25rem;
+  color: var(--muted);
+}
+
 .header-leading .menu-toggle,
 .mobile-brand {
   display: none;
@@ -317,7 +363,7 @@ html:has(.mobile-sidebar[open]) {
   }
 
   .header-leading {
-    flex-basis: 100%;
+    flex: 1 1 auto;
   }
 
   .menu-toggle {
@@ -326,6 +372,7 @@ html:has(.mobile-sidebar[open]) {
 
   .search-field {
     flex: 1 1 100%;
+    order: 1;
   }
 
   .search-field input {

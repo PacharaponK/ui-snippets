@@ -21,7 +21,7 @@ const results = computed(() => {
   const { search, category, framework } = filters.value
   const terms = search.toLowerCase().trim().split(/\s+/).filter(Boolean)
 
-  return componentRegistry.filter(entry => {
+  return componentRegistry.value.filter(entry => {
     const matchesFramework = framework === 'all' || entry.framework === framework
     const matchesCategory = !category || entry.category === category
     const searchable = [entry.name, ...entry.tags].join(' ').toLowerCase()

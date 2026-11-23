@@ -4,6 +4,8 @@ import { useRoute, useRouter } from 'vue-router'
 import AppHeader from './components/layout/AppHeader.vue'
 import AppSidebar from './components/layout/AppSidebar.vue'
 import { componentRegistry } from './data/componentRegistry'
+import { isCustomizeRoute } from './data/libraryAccess'
+import { signedIn } from './data/librarySession'
 import { galleryLocation, readGalleryFilters } from './router/galleryLocation'
 
 const route = useRoute()
@@ -11,7 +13,7 @@ const router = useRouter()
 const navigation = useTemplateRef('navigation')
 
 const galleryActive = computed(() => route.name === 'gallery')
-const detail = computed(() => componentRegistry.find(entry => entry.id === route.params.id))
+const detail = computed(() => componentRegistry.value.find(entry => entry.id === route.params.id))
 const filters = computed(() => readGalleryFilters(route.query))
 const sidebarProps = computed(() => ({ ...filters.value, galleryActive: galleryActive.value }))
 
@@ -40,10 +42,15 @@ function closeOnDesktop(event) {
 onMounted(() => desktop.addEventListener('change', closeOnDesktop))
 onUnmounted(() => desktop.removeEventListener('change', closeOnDesktop))
 
-watch(() => route.path, () => {
-  document.title = detail.value ? `${detail.value.name} · Ready Components` : 'Ready Components'
-  closeNavigation()
+watch([detail, () => route.name], () => {
+  const title = detail.value?.name ?? (route.name === 'login' ? 'Sign in' : '')
+  document.title = title ? `${title} · Ready Components` : 'Ready Components'
 }, { immediate: true })
+
+watch(() => route.path, closeNavigation)
+watch(signedIn, value => {
+  if (!value && isCustomizeRoute(route)) router.replace(galleryLocation())
+})
 </script>
 
 <template>
@@ -59,6 +66,7 @@ watch(() => route.path, () => {
     <AppHeader
       :search="filters.search"
       :detail-name="detail?.name"
+      :sign-in-page="route.name === 'login'"
       @search="updateSearch"
       @open-navigation="openNavigation"
     />

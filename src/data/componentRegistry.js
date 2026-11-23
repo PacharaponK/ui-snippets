@@ -1,7 +1,9 @@
-import { defineAsyncComponent } from 'vue'
+import { computed, defineAsyncComponent } from 'vue'
+import { customizeCategoryId } from './libraryAccess'
+import { memberComponents } from './librarySession'
 
-const previews = import.meta.glob('../examples/*/*.vue', { import: 'default' })
-const sources = import.meta.glob('../examples/*/*.vue', { eager: true, import: 'default', query: '?raw' })
+const previews = import.meta.glob('../examples/{primevue,bootstrap}/*.vue', { import: 'default' })
+const sources = import.meta.glob('../examples/{primevue,bootstrap}/*.vue', { eager: true, import: 'default', query: '?raw' })
 
 export const frameworks = [
   { id: 'primevue', name: 'PrimeVue', icon: 'pi-bolt', url: 'https://primevue.org/' },
@@ -10,7 +12,7 @@ export const frameworks = [
 
 const categoryDetails = {
   buttons: { name: 'Buttons', icon: 'pi-stop' },
-  customize: { name: 'Customize', icon: 'pi-sliders-h' },
+  [customizeCategoryId]: { name: 'Customize', icon: 'pi-sliders-h' },
   forms: { name: 'Forms', icon: 'pi-list' },
   layout: { name: 'Layout', icon: 'pi-th-large' },
   feedback: { name: 'Feedback', icon: 'pi-comment' },
@@ -18,16 +20,6 @@ const categoryDetails = {
 }
 
 const entries = [
-  {
-    id: 'appointment-calendar',
-    name: 'Appointment Calendar',
-    description: 'A staff schedule for viewing, booking, and blocking appointments by day.',
-    framework: 'primevue',
-    category: 'customize',
-    tags: ['calendar', 'schedule', 'staff', 'booking', 'availability', 'bootstrap'],
-    file: 'AppointmentCalendar.vue',
-    widePreview: true,
-  },
   {
     id: 'primevue-button',
     name: 'Button',
@@ -110,7 +102,7 @@ const entries = [
   },
 ]
 
-export const componentRegistry = entries.map(({ file, ...entry }) => {
+const publicComponents = entries.map(({ file, ...entry }) => {
   const path = `../examples/${entry.framework}/${file}`
 
   return {
@@ -120,7 +112,9 @@ export const componentRegistry = entries.map(({ file, ...entry }) => {
   }
 })
 
-export const categories = [...new Set(componentRegistry.map(entry => entry.category))]
+export const componentRegistry = computed(() => [...memberComponents.value, ...publicComponents])
+
+export const categories = Object.keys(categoryDetails)
   .sort()
   .map(id => ({ id, ...categoryDetails[id] }))
 

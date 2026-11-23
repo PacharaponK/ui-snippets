@@ -1,14 +1,30 @@
 <script setup>
-import { onMounted, onUnmounted, useTemplateRef } from 'vue'
+import { onMounted, onUnmounted, ref, useTemplateRef } from 'vue'
+import { signedIn, signOut } from '../../data/librarySession'
 import { galleryLocation } from '../../router/galleryLocation'
 
 defineProps({
   search: { type: String, required: true },
   detailName: { type: String, default: '' },
+  signInPage: Boolean,
 })
 
 const emit = defineEmits(['search', 'open-navigation'])
 const input = useTemplateRef('searchInput')
+const signingOut = ref(false)
+const signOutError = ref(false)
+
+async function leaveSession() {
+  signingOut.value = true
+  signOutError.value = false
+  try {
+    await signOut()
+  } catch {
+    signOutError.value = true
+  } finally {
+    signingOut.value = false
+  }
+}
 
 function focusSearch(event) {
   const editing = event.target instanceof Element && event.target.closest(
@@ -78,6 +94,13 @@ onUnmounted(() => window.removeEventListener('keydown', focusSearch))
           <i class="pi pi-times" aria-hidden="true"></i>
         </button>
         <kbd v-else title="Focus search">/</kbd>
+      </div>
+      <div v-if="!signInPage" class="session-actions">
+        <button v-if="signedIn" type="button" class="session-button text-button" :disabled="signingOut" @click="leaveSession">
+          Sign out
+        </button>
+        <RouterLink v-else class="session-button text-button" :to="{ name: 'login' }">Sign in</RouterLink>
+        <p v-if="signOutError" role="alert" class="session-error">Could not sign out. Try again.</p>
       </div>
     </div>
   </header>

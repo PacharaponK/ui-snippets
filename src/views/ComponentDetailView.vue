@@ -8,7 +8,7 @@ import { categories, componentRegistry, findFramework } from '../data/componentR
 import { galleryLocation } from '../router/galleryLocation'
 
 const route = useRoute()
-const example = computed(() => componentRegistry.find(entry => entry.id === route.params.id))
+const example = computed(() => componentRegistry.value.find(entry => entry.id === route.params.id))
 const framework = computed(() => findFramework(example.value?.framework))
 const category = computed(() => categories.find(item => item.id === example.value?.category))
 </script>
