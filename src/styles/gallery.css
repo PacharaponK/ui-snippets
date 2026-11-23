@@ -34,21 +34,6 @@
   line-height: 1.65;
 }
 
-.hero-content .hero-action {
-  gap: 0.45rem;
-  margin-top: 1rem;
-  background: #e9e5ff;
-  color: #312676;
-}
-
-.hero-content .hero-action:hover {
-  background: var(--white);
-}
-
-.hero-content .hero-action:focus-visible {
-  outline-color: #e9e5ff;
-}
-
 .hero-art {
   position: absolute;
   inset: 0 0 0 auto;

@@ -37,12 +37,6 @@ function selectFramework(framework) {
 function clearFilters() {
   router.push(galleryLocation())
 }
-
-function openRandomComponent() {
-  const index = Math.floor(Math.random() * componentRegistry.length)
-  const { id } = componentRegistry[index]
-  router.push({ name: 'component', params: { id } })
-}
 </script>
 
 <template>
@@ -50,10 +44,6 @@ function openRandomComponent() {
     <div class="hero-content">
       <h1 id="library-title">Component library</h1>
       <p>Browse live PrimeVue and Bootstrap examples, inspect the source, and copy reusable Vue snippets.</p>
-      <button type="button" class="primary-action hero-action" @click="openRandomComponent">
-        <i class="pi pi-sparkles" aria-hidden="true"></i>
-        Surprise me
-      </button>
     </div>
     <div class="hero-art" aria-hidden="true">
       <div class="hero-orbit"></div>
