@@ -15,7 +15,7 @@ const category = computed(() => categories.find(item => item.id === props.exampl
 </script>
 
 <template>
-  <article class="gallery-card" :aria-labelledby="`${example.id}-title`">
+  <article class="gallery-card" :class="{ 'gallery-card-wide': example.widePreview }" :aria-labelledby="`${example.id}-title`">
     <header class="gallery-card-header">
       <div class="card-heading">
         <span class="component-icon"><i class="pi" :class="category.icon" aria-hidden="true"></i></span>

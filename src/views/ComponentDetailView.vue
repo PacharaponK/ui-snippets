@@ -39,7 +39,7 @@ const category = computed(() => categories.find(item => item.id === example.valu
       </a>
     </div>
 
-    <div :key="example.id" class="detail-grid">
+    <div :key="example.id" class="detail-grid" :class="{ 'detail-grid-wide': example.widePreview }">
       <section class="detail-panel" aria-labelledby="detail-preview">
         <header><h2 id="detail-preview"><i class="pi pi-eye" aria-hidden="true"></i> Live preview</h2></header>
         <ComponentPreview :example="example" />

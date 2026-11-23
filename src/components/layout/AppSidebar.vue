@@ -13,13 +13,16 @@ const props = defineProps({
 
 defineEmits(['navigate', 'close'])
 
+const customizeCategory = categories.find(item => item.id === 'customize')
+const standardCategories = categories.filter(item => item !== customizeCategory)
+
 const categoryCounts = computed(() => {
   const available = props.framework === 'all'
     ? componentRegistry
     : componentRegistry.filter(entry => entry.framework === props.framework)
 
   return Object.fromEntries(
-    categories.map(({ id }) => [id, available.filter(entry => entry.category === id).length]),
+    standardCategories.map(({ id }) => [id, available.filter(entry => entry.category === id).length]),
   )
 })
 </script>
@@ -36,7 +39,7 @@ const categoryCounts = computed(() => {
       </button>
     </div>
 
-    <nav class="sidebar-section" aria-label="Frameworks">
+    <nav class="sidebar-section" aria-label="Library">
       <p class="sidebar-label">Library</p>
       <RouterLink
         class="sidebar-link"
@@ -61,12 +64,22 @@ const categoryCounts = computed(() => {
         <i class="pi" :class="item.icon" aria-hidden="true"></i>
         <span>{{ item.name }}</span>
       </RouterLink>
+      <RouterLink
+        class="sidebar-link"
+        :class="{ 'is-active': galleryActive && category === customizeCategory.id }"
+        :aria-current-value="galleryActive && category === customizeCategory.id ? 'true' : 'false'"
+        :to="galleryLocation({ category: customizeCategory.id })"
+        @click="$emit('navigate')"
+      >
+        <i class="pi" :class="customizeCategory.icon" aria-hidden="true"></i>
+        <span>{{ customizeCategory.name }}</span>
+      </RouterLink>
     </nav>
 
     <nav class="sidebar-section" aria-label="Categories">
       <p class="sidebar-label">Categories</p>
       <RouterLink
-        v-for="item in categories"
+        v-for="item in standardCategories"
         :key="item.id"
         class="sidebar-link"
         :class="{ 'is-active': galleryActive && category === item.id }"

@@ -235,6 +235,18 @@
   box-shadow: 0 2px 5px #25234c07;
 }
 
+.gallery-card-wide {
+  grid-column: 1 / -1;
+}
+
+.gallery-card-wide .gallery-card-header p {
+  min-height: 0;
+}
+
+.gallery-card-wide .preview-stage {
+  --schedule-grid-max-height: 18rem;
+}
+
 .gallery-card-header {
   padding: 0.95rem 0.95rem 0.8rem;
 }
@@ -562,6 +574,10 @@
   grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
   align-items: stretch;
   gap: 1rem;
+}
+
+.detail-grid-wide {
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .detail-panel {
