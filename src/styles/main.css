@@ -1,0 +1,114 @@
+@import './layout.css';
+@import './gallery.css';
+
+@font-face {
+  font-family: Inter;
+  src: url('../assets/inter-latin.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+:root {
+  color-scheme: light;
+  --font-ui: Inter, system-ui, sans-serif;
+  --font-code: ui-monospace, SFMono-Regular, Consolas, monospace;
+  --surface: #f7f8fc;
+  --white: #fff;
+  --ink: #191c32;
+  --muted: #545c70;
+  --subtle: #626a7d;
+  --line: #e3e6ef;
+  --accent: #5045d8;
+  --accent-strong: #4036bf;
+  --accent-light: #eeecff;
+  --sidebar-width: 15.25rem;
+  --content-padding: clamp(1.25rem, 3vw, 2.75rem);
+  --content-max: 92rem;
+  --bs-body-font-family: var(--font-ui);
+  --bs-body-color: var(--ink);
+  --bs-body-bg: var(--surface);
+}
+
+body {
+  min-width: 0;
+  background: var(--surface);
+  color: var(--ink);
+  font-family: var(--font-ui);
+  font-size: 0.875rem;
+  -webkit-font-smoothing: antialiased;
+}
+
+button, input, select {
+  font: inherit;
+}
+
+button, a, input, select {
+  -webkit-tap-highlight-color: transparent;
+}
+
+a {
+  color: inherit;
+}
+
+::selection {
+  background: #dcd7ff;
+  color: #271c76;
+}
+
+:where(a, button, input, select, pre):focus-visible {
+  outline: 2px solid #695cf4;
+  outline-offset: 3px;
+}
+
+.skip-link {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 10;
+  transform: translateY(-150%);
+  border-radius: 0.5rem;
+  padding: 0.65rem 1rem;
+  background: var(--white);
+  color: var(--accent-strong);
+  font-weight: 650;
+}
+
+.skip-link:focus {
+  transform: none;
+}
+
+.icon-button,
+.text-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-height: 2.125rem;
+  padding: 0.375rem 0.5rem;
+  border: 1px solid transparent;
+  border-radius: 0.42rem;
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.icon-button {
+  width: 2.125rem;
+  flex: 0 0 auto;
+}
+
+.icon-button:hover,
+.text-button:hover {
+  background: #f1f2f8;
+  color: var(--ink);
+}
+
+.text-button .pi,
+.icon-button .pi {
+  font-size: 0.8rem;
+}
