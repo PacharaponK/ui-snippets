@@ -1,9 +1,9 @@
 import { Readable } from 'node:stream'
 import { defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import { authorizeMemberAsset, handleSession, memberAssetsPath, privateHeaders, sessionPath } from './server/libraryAccess.js'
+import { authorizeMemberAsset, handleSession, libraryCredentials, memberAssetsPath, privateHeaders, sessionPath } from './server/libraryAccess.js'
 
-function localLibraryAccess(key) {
+function localLibraryAccess(credentials) {
   function configure(server) {
     server.middlewares.use(async (incoming, outgoing, next) => {
       const url = new URL(incoming.url, `http://${incoming.headers.host}`)
@@ -21,8 +21,8 @@ function localLibraryAccess(key) {
           ...(incoming.method === 'POST' && { body: Readable.toWeb(incoming), duplex: 'half' }),
         })
         const response = isSession
-          ? await handleSession(request, key)
-          : authorizeMemberAsset(request, key)
+          ? await handleSession(request, credentials)
+          : authorizeMemberAsset(request, credentials)
         if (!response) {
           for (const [name, value] of Object.entries(privateHeaders)) outgoing.setHeader(name, value)
           return next()
@@ -48,10 +48,11 @@ const privateDirectory = memberAssetsPath.slice(1)
 const customizeRegistry = '/src/data/customizeRegistry.js'
 
 export default defineConfig(({ mode }) => {
-  const { UI_SNIPPETS_ACCESS_KEY: key } = loadEnv(mode, process.cwd(), 'UI_SNIPPETS_')
+  const env = loadEnv(mode, process.cwd(), 'UI_SNIPPETS_')
+  const credentials = libraryCredentials(env.UI_SNIPPETS_ACCESS_KEY, env.UI_SNIPPETS_SESSION_SECRET)
 
   return {
-    plugins: [vue(), localLibraryAccess(key)],
+    plugins: [vue(), localLibraryAccess(credentials)],
     build: {
       rollupOptions: {
         output: {

@@ -6,10 +6,14 @@ import libraryProxy from '../server/libraryProxy.js'
 const origin = 'https://library.example'
 const key = randomBytes(32).toString('hex')
 const previousKey = process.env.UI_SNIPPETS_ACCESS_KEY
+const previousSecret = process.env.UI_SNIPPETS_SESSION_SECRET
 process.env.UI_SNIPPETS_ACCESS_KEY = key
+delete process.env.UI_SNIPPETS_SESSION_SECRET
 after(() => {
   if (previousKey === undefined) delete process.env.UI_SNIPPETS_ACCESS_KEY
   else process.env.UI_SNIPPETS_ACCESS_KEY = previousKey
+  if (previousSecret === undefined) delete process.env.UI_SNIPPETS_SESSION_SECRET
+  else process.env.UI_SNIPPETS_SESSION_SECRET = previousSecret
 })
 
 function request(path, options) {
@@ -88,4 +92,41 @@ test('stays in guest mode without a configured access key', async () => {
   } finally {
     process.env.UI_SNIPPETS_ACCESS_KEY = key
   }
+})
+
+test('accepts a password with a separate session secret and revokes access when credentials change', async t => {
+  const password = 'ExampleCloud927'
+  const secret = randomBytes(32).toString('hex')
+  process.env.UI_SNIPPETS_ACCESS_KEY = password
+  process.env.UI_SNIPPETS_SESSION_SECRET = secret
+  t.after(() => {
+    process.env.UI_SNIPPETS_ACCESS_KEY = key
+    delete process.env.UI_SNIPPETS_SESSION_SECRET
+  })
+
+  assert.equal((await signIn(password.toLowerCase())).status, 401)
+  assert.equal((await signIn(secret)).status, 401)
+  const login = await signIn(password)
+  assert.equal(login.status, 200)
+  const headers = { Cookie: login.headers.get('set-cookie').split(';')[0] }
+  assert.equal((await request('/member-assets/customize.js', { headers })).status, 200)
+
+  process.env.UI_SNIPPETS_SESSION_SECRET = randomBytes(32).toString('hex')
+  assert.equal((await request('/member-assets/customize.js', { headers })).status, 401)
+  process.env.UI_SNIPPETS_SESSION_SECRET = secret
+  process.env.UI_SNIPPETS_ACCESS_KEY = 'AnotherCloudPassword'
+  assert.equal((await request('/member-assets/customize.js', { headers })).status, 401)
+})
+
+test('requires a valid session secret for passwords', async t => {
+  const password = 'ExampleCloud927'
+  process.env.UI_SNIPPETS_ACCESS_KEY = password
+  t.after(() => {
+    process.env.UI_SNIPPETS_ACCESS_KEY = key
+    delete process.env.UI_SNIPPETS_SESSION_SECRET
+  })
+
+  assert.equal((await signIn(password)).status, 503)
+  process.env.UI_SNIPPETS_SESSION_SECRET = password
+  assert.equal((await signIn(password)).status, 503)
 })

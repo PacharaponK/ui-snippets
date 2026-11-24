@@ -17,7 +17,9 @@ Open [http://localhost:5173](http://localhost:5173). Use `npm run build` to crea
 
 Guests can browse PrimeVue and Bootstrap. Signing in adds **Customize** to the sidebar and unlocks its previews and copyable source in the app.
 
-Generate a library access key with `openssl rand -hex 32`. For local use, set `UI_SNIPPETS_ACCESS_KEY` to that value in `.env.local` and restart Vite. On Vercel, add the same server-only variable in **Project Settings → Environment Variables** for the environments where sign-in should be available, then redeploy. Store the key in a password manager and enter it on the **Sign in** page. If the variable is absent or invalid, the site stays in guest mode. Changing the key invalidates existing sessions.
+Set `UI_SNIPPETS_ACCESS_KEY` to the password you want to enter on the **Sign in** page. Passwords can be 8–64 characters and require a separate `UI_SNIPPETS_SESSION_SECRET`. Generate that secret with `node -p "require('node:crypto').randomBytes(32).toString('hex')"`. Existing installations that use a generated 64-character hexadecimal access key can continue using just that key.
+
+For local use, add the variables to `.env.local` and restart Vite. On Vercel, add both as **Secret** variables under **Project Settings → Environment Variables** for the environments where sign-in should be available, then redeploy. The site stays in guest mode when required configuration is missing or invalid. Changing either value invalidates existing sessions.
 
 Use the included Vercel Routing Middleware for production hosting. It validates sessions before serving the Customize bundles. A plain static host serves the generated bundles without these access checks.
 
