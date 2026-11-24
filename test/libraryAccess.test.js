@@ -2,6 +2,7 @@ import assert from 'node:assert/strict'
 import { randomBytes } from 'node:crypto'
 import { after, test } from 'node:test'
 import libraryProxy from '../server/libraryProxy.js'
+import { isCustomizeRoute } from '../src/data/libraryAccess.js'
 
 const origin = 'https://library.example'
 const key = randomBytes(32).toString('hex')
@@ -35,6 +36,13 @@ test('guests cannot fetch Customize bundles', async () => {
   const asset = await request('/member-assets/customize.js')
   assert.equal(asset.status, 401)
   assert.match(asset.headers.get('cache-control'), /no-store/)
+})
+
+test('weekly appointment calendar detail requires a Customize session', () => {
+  assert.equal(isCustomizeRoute({
+    name: 'component',
+    params: { id: 'weekly-appointment-calendar' },
+  }), true)
 })
 
 test('rejects incorrect keys, oversized input and cross-origin sign-in', async () => {
