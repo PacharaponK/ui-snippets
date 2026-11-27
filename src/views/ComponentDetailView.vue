@@ -5,6 +5,7 @@ import { useRoute } from 'vue-router'
 import CodeViewer from '../components/gallery/CodeViewer.vue'
 import ComponentPreview from '../components/gallery/ComponentPreview.vue'
 import CopyCodeButton from '../components/gallery/CopyCodeButton.vue'
+import CustomizeSourceViewer from '../components/gallery/CustomizeSourceViewer.vue'
 import { categories, componentRegistry, findFramework } from '../data/componentRegistry'
 import { customizeCategoryId } from '../data/libraryAccess'
 import { galleryLocation } from '../router/galleryLocation'
@@ -16,7 +17,6 @@ const category = computed(() => categories.find(item => item.id === example.valu
 const isCustomize = computed(() => example.value?.category === customizeCategoryId)
 const sourceOpen = ref(false)
 const sourceExpanded = ref(false)
-
 watch(() => route.params.id, () => {
   sourceOpen.value = false
   sourceExpanded.value = false
@@ -86,11 +86,13 @@ watch(() => route.params.id, () => {
             <CopyCodeButton :source="example.sourceCode" @failed="sourceOpen = true" />
           </div>
         </header>
-        <CodeViewer
-          v-show="!isCustomize || sourceOpen"
-          id="detail-source-code"
+        <CustomizeSourceViewer
+          v-if="isCustomize"
           :source="example.sourceCode"
+          :sections="example.sourceSections"
+          :open="sourceOpen"
         />
+        <CodeViewer v-else :source="example.sourceCode" />
       </section>
     </div>
   </template>

@@ -1,7 +1,7 @@
 import AppointmentCalendar from '../examples/customize/AppointmentCalendar.vue'
-import appointmentCalendarSource from '../examples/customize/AppointmentCalendar.vue?raw'
+import appointmentCalendarSource from '../examples/customize/AppointmentCalendar.vue?snippet-source'
 import WeeklyAppointmentCalendar from '../examples/customize/WeeklyAppointmentCalendar.vue'
-import weeklyAppointmentCalendarSource from '../examples/customize/WeeklyAppointmentCalendar.vue?raw'
+import weeklyAppointmentCalendarSource from '../examples/customize/WeeklyAppointmentCalendar.vue?snippet-source'
 import { appointmentCalendarId, customizeCategoryId, weeklyAppointmentCalendarId } from './libraryAccess'
 
 export default [
@@ -13,7 +13,7 @@ export default [
     category: customizeCategoryId,
     tags: ['calendar', 'schedule', 'staff', 'booking', 'availability', 'bootstrap'],
     previewComponent: AppointmentCalendar,
-    sourceCode: appointmentCalendarSource,
+    ...appointmentCalendarSource,
     widePreview: true,
   },
   {
@@ -24,7 +24,7 @@ export default [
     category: customizeCategoryId,
     tags: ['calendar', 'weekly', 'schedule', 'staff', 'booking', 'availability', 'bootstrap'],
     previewComponent: WeeklyAppointmentCalendar,
-    sourceCode: weeklyAppointmentCalendarSource,
+    ...weeklyAppointmentCalendarSource,
     widePreview: true,
   },
 ]

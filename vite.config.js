@@ -1,6 +1,7 @@
 import { Readable } from 'node:stream'
 import { defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import { snippetSource } from './server/snippetSource.js'
 import { authorizeMemberAsset, handleSession, libraryCredentials, memberAssetsPath, privateHeaders, sessionPath } from './server/libraryAccess.js'
 
 function localLibraryAccess(credentials) {
@@ -52,7 +53,7 @@ export default defineConfig(({ mode }) => {
   const credentials = libraryCredentials(env.UI_SNIPPETS_ACCESS_KEY, env.UI_SNIPPETS_SESSION_SECRET)
 
   return {
-    plugins: [vue(), localLibraryAccess(credentials)],
+    plugins: [snippetSource(), vue(), localLibraryAccess(credentials)],
     build: {
       rollupOptions: {
         output: {
