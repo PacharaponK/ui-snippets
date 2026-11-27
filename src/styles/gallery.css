@@ -619,6 +619,18 @@
   max-height: 32rem;
 }
 
+.detail-panel.detail-source-customize {
+  min-height: 0;
+}
+
+.detail-source-customize .source-code {
+  max-height: 22rem;
+}
+
+.detail-source-customize.detail-source-expanded .source-code {
+  max-height: max(32rem, 75dvh);
+}
+
 @media (max-width: 1280px) and (min-width: 901px) {
   .gallery-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
